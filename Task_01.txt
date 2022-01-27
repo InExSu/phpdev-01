@@ -1,2 +1,74 @@
+При первом повторе лекции столнулся с ошибкой входа в mysql с паролем, без пароля.
+ERROR 1045 (28000): Access denied for user 'root'@'localhost' 
+Переустановка mysql не помоглаю
+SOF не помог.
+
+
+Поэтому:
+
+==== Попытка № 2 на чистую виртуалку.
+1. Подключил образ диска Дополнений гостевой ОС
+
+2. Сначала mysql
+' по статье https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-20-04-ru
 sudo apt update
-sudo apt install git vim nano php-fpm zsh htop nginx
+sudo apt install mysql-server mysql-client
+
+прописал пароль
+sudo mysql_secure_installation
+
+sudo mysql
+SELECT user,authentication_string,plugin,host FROM mysql.user;
+для лучшей работы с phpadmin:
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '1;
+Пробую войти 
+mysql -u root -p
+
+Ок! Вошёл.
+
+Создал запасного пользователя
+CREATE USER 'm'@'localhost' IDENTIFIED BY '2';
+дал права доступа ко всем таблицам в базе данных
+GRANT ALL PRIVILEGES ON *.* TO 'm'@'localhost' WITH GRANT OPTION;
+exit
+
+
+Теперь приложения
+sudo apt install git vim nano php-fpm phpmyadmin nginx
+
+Nginx
+cd /etc/nginx/sites-available
+Редактирование
+sudo nano pma.conf
+Символическая ссылка
+cd ../sites-enabled
+sudo ln -s ../sites-available/pma.conf pma
+sudo service nginx reload
+
+sudo nano /etc/hosts
+127.0.1.1       ix-VirtualBox phpdev nginx.my pma.my
+
+sudo chmod g+w /www/
+sudo chown www-data:www-data /www
+sudo adduser user www-data
+
+Зайти в Убунту как user
+
+sudo nano /etc/nginx/sites-available/pma.conf
+
+cd /www
+git clone https://github.com/InExSu/phpdev-01
+
+Чтобы nginx видел репо
+sudo chown -R www-data:www-data phpdev-01
+
+cd phpdev-01
+
+vscode 
+sudo dpkg -i ~/Downloads/code_1.63.2-1639562499_amd64.deb
+
+cd /www/phpdev-01
+mkdir conf
+cd conf
+
+Время кончилось.
